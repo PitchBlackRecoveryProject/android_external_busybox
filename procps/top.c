@@ -168,7 +168,7 @@ struct globals {
 #else
 	cmp_funcp sort_function[SORT_DEPTH];
 	struct save_hist *prev_hist;
-	int prev_hist_count;
+	unsigned prev_hist_count;
 	jiffy_counts_t cur_jif, prev_jif;
 	/* int hist_iterations; */
 	unsigned total_pcpu;
@@ -177,7 +177,7 @@ struct globals {
 #if ENABLE_FEATURE_TOP_SMP_CPU
 	/* Per CPU samples: current and last */
 	jiffy_counts_t *cpu_jif, *cpu_prev_jif;
-	int num_cpus;
+	unsigned num_cpus;
 #endif
 #if ENABLE_FEATURE_USE_TERMIOS
 	char kbd_input[KEYCODE_BUFFER_SIZE];
@@ -343,7 +343,8 @@ static void do_stats(void)
 {
 	top_status_t *cur;
 	pid_t pid;
-	int i, last_i, n;
+	int n;
+	unsigned i, last_i;
 	struct save_hist *new_hist;
 
 	get_jiffy_counts();
