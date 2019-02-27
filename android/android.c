@@ -32,6 +32,7 @@ char *getusershell() { return NULL; }
 void setusershell() {}
 void endusershell() {}
 
+#ifndef BIONIC_O
 struct mntent *getmntent_r(FILE *fp, struct mntent *mnt, char *buf, int buflen)
 {
 	char *tokp = NULL, *s;
@@ -89,8 +90,7 @@ char *hasmntopt(const struct mntent *mnt, const char *opt)
 
 /* declared in grp.h, but not necessary */
 #if !ENABLE_USE_BB_PWD_GRP
-
 void setgrent() {}
 void endgrent() {}
 #endif
-
+#endif

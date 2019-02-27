@@ -22,8 +22,10 @@
 
 #define killpg_busybox(P, S) kill(-(P), S)
 
+#if !defined(BIONIC_O)
 #define setmntent fopen
 #define endmntent fclose
+#endif
 
 /* defined in bionic/utmp.c */
 void endutent(void);
@@ -83,9 +85,8 @@ char *hasmntopt(const struct mntent *, const char *);
 /* bionic's vfork is rather broken; for now a terrible bandaid: */
 #define vfork fork
 
-#if !defined(BIONIC_L) && !defined(BLOATCHECK)
+#if defined(BIONIC_L) && !defined(BLOATCHECK)
 #define _SOCKLEN_T_DECLARED
-typedef int socklen_t;
 #endif
 
 /* wait3 was removed in android L */
