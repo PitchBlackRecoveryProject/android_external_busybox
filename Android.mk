@@ -7,8 +7,8 @@ BB_PATH := $(LOCAL_PATH)
 BIONIC_ICS := false
 BIONIC_L := true
 
-BUSYBOX_WARNING_HIDE := -Wno-error=implicit-function-declaration -Wno-implicit-function-declaration -Wno-implicit-fallthrough \
-			-Wno-sign-compare -Wno-format-overflow -Wno-shift-negative-value -Wno-logical-not-parentheses -Wno-return-type
+BUSYBOX_WARNING_HIDE := -Wno-error=implicit-function-declaration -Wno-implicit-function-declaration \
+			-Wno-sign-compare -Wno-return-type -Wno-unused-variable
 
 # Make a static library for regex.
 include $(CLEAR_VARS)

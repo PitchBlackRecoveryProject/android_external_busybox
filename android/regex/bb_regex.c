@@ -2928,7 +2928,7 @@ bb_re_compile_fastmap (bufp)
   char *destination;
 #endif
   /* We don't push any register information onto the failure stack.  */
-  unsigned num_regs = 0;
+  //unsigned num_regs = 0;
 
   register char *fastmap = bufp->fastmap;
   unsigned char *pattern = bufp->buffer;
@@ -5479,6 +5479,7 @@ bb_regerror (errcode, preg, errbuf, errbuf_size)
 {
   const char *msg;
   size_t msg_size;
+      (void) preg;
 
   if (errcode < 0
       || errcode >= (sizeof (re_error_msgid) / sizeof (re_error_msgid[0])))
