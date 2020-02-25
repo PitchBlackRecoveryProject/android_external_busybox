@@ -41,7 +41,7 @@ BUSYBOX_CROSS_COMPILER_PREFIX := $(abspath $(TARGET_TOOLS_PREFIX))
 
 BB_PREPARE_FLAGS:=
 ifeq ($(HOST_OS),darwin)
-    BB_HOSTCC := $(ANDROID_BUILD_TOP)/prebuilts/gcc/darwin-x86/host/i686-apple-darwin-4.2.1/bin/i686-apple-darwin11-gcc
+    BB_HOSTCC := $(TOP)/prebuilts/gcc/darwin-x86/host/i686-apple-darwin-4.2.1/bin/i686-apple-darwin11-gcc
     BB_PREPARE_FLAGS := HOSTCC=$(BB_HOSTCC)
 endif
 
