@@ -24,7 +24,6 @@ LOCAL_SRC_FILES := $(shell cat $(BB_PATH)/android/librpc.sources)
 LOCAL_C_INCLUDES := $(BB_PATH)/android/librpc
 LOCAL_MODULE := libuclibcrpc
 LOCAL_CFLAGS += -fno-strict-aliasing $(BUSYBOX_WARNING_HIDE)
-LOCAL_CLANG := false
 ifeq ($(BIONIC_L),true)
 LOCAL_CFLAGS += -DBIONIC_ICS -DBIONIC_L
 endif
@@ -38,8 +37,16 @@ LOCAL_PATH := $(BB_PATH)
 include $(CLEAR_VARS)
 
 BUSYBOX_CROSS_COMPILER_PREFIX := $(abspath $(TARGET_TOOLS_PREFIX))
-
-BB_PREPARE_FLAGS:=
+ifndef MAKE_PATH
+    GCC_PREBUILTS := $(PWD)/prebuilts/gcc/linux-x86/host
+    HOST_TOOLCHAIN := $(GCC_PREBUILTS)/x86_64-linux-glibc2.17-4.8/x86_64-linux/bin
+    HOST_TOOLCHAIN_LIBEXEC := $(GCC_PREBUILTS)/libexec/gcc/x86_64-linux/4.8.3
+    MAKE_EXTRA_PATH := $(HOST_TOOLCHAIN):$(HOST_TOOLCHAIN_LIBEXEC)
+    MAKE_PATH = PATH="$(MAKE_EXTRA_PATH):$$PATH" $(PWD)/prebuilts/build-tools/linux-x86/bin/make
+endif
+BB_CC := $(abspath $(TARGET_TOOLS_PREFIX))gcc
+BB_HOSTCC := $(abspath $(LLVM_PREBUILTS_PATH)/clang)
+BB_PREPARE_FLAGS := CC=$(BB_CC) HOSTCC=$(BB_HOSTCC) PKG_CONFIG=/usr/bin/pkg-config
 ifeq ($(HOST_OS),darwin)
     BB_HOSTCC := $(ANDROID_BUILD_TOP)/prebuilts/gcc/darwin-x86/host/i686-apple-darwin-4.2.1/bin/i686-apple-darwin11-gcc
     BB_PREPARE_FLAGS := HOSTCC=$(BB_HOSTCC)
@@ -55,7 +62,7 @@ $(busybox_prepare_full): $(BB_PATH)/busybox-full.config
 	@rm -f $(shell find $(abspath $(call intermediates-dir-for,EXECUTABLES,busybox)) -name "*.o")
 	@mkdir -p $(@D)
 	@cat $^ > $@ && echo "CONFIG_CROSS_COMPILER_PREFIX=\"$(BUSYBOX_CROSS_COMPILER_PREFIX)\"" >> $@
-	make -C $(BB_PATH) prepare O=$(@D) $(BB_PREPARE_FLAGS)
+	$(MAKE_PATH) -C $(BB_PATH) prepare O=$(@D) $(BB_PREPARE_FLAGS)
 
 busybox_prepare_minimal := $(bb_gen)/minimal/.config
 $(busybox_prepare_minimal): $(BB_PATH)/busybox-minimal.config
@@ -64,7 +71,7 @@ $(busybox_prepare_minimal): $(BB_PATH)/busybox-minimal.config
 	@rm -f $(shell find $(abspath $(call intermediates-dir-for,STATIC_LIBRARIES,libbusybox)) -name "*.o")
 	@mkdir -p $(@D)
 	@cat $^ > $@ && echo "CONFIG_CROSS_COMPILER_PREFIX=\"$(BUSYBOX_CROSS_COMPILER_PREFIX)\"" >> $@
-	make -C $(BB_PATH) prepare O=$(@D) $(BB_PREPARE_FLAGS)
+	$(MAKE_PATH) -C $(BB_PATH) prepare O=$(@D) $(BB_PREPARE_FLAGS)
 
 
 #####################################################################
@@ -144,7 +151,7 @@ LOCAL_CFLAGS += \
   -Dgenerate_uuid=busybox_generate_uuid
 LOCAL_ASFLAGS := $(BUSYBOX_AFLAGS)
 LOCAL_MODULE := libbusybox
-LOCAL_MODULE_TAGS := eng debug
+LOCAL_MODULE_TAGS := optional
 LOCAL_STATIC_LIBRARIES := libcutils libc libm libselinux
 LOCAL_ADDITIONAL_DEPENDENCIES := $(busybox_prepare_minimal)
 include $(BUILD_STATIC_LIBRARY)
@@ -162,12 +169,11 @@ LOCAL_C_INCLUDES := $(bb_gen)/full/include $(BUSYBOX_C_INCLUDES)
 LOCAL_CFLAGS := $(BUSYBOX_CFLAGS)
 LOCAL_ASFLAGS := $(BUSYBOX_AFLAGS)
 LOCAL_MODULE := busybox
-LOCAL_MODULE_TAGS := eng debug
+LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
 LOCAL_SHARED_LIBRARIES := libc libcutils libm
 LOCAL_STATIC_LIBRARIES := libclearsilverregex libuclibcrpc libselinux
 LOCAL_ADDITIONAL_DEPENDENCIES := $(busybox_prepare_full)
-LOCAL_CLANG := false
 include $(BUILD_EXECUTABLE)
 
 BUSYBOX_LINKS := $(shell cat $(BB_PATH)/busybox-$(BUSYBOX_CONFIG).links)
@@ -218,5 +224,4 @@ LOCAL_UNSTRIPPED_PATH := $(PRODUCT_OUT)/symbols/utilities
 $(LOCAL_MODULE): busybox_prepare
 LOCAL_PACK_MODULE_RELOCATIONS := false
 LOCAL_ADDITIONAL_DEPENDENCIES := $(busybox_prepare_full)
-LOCAL_CLANG := false
 include $(BUILD_EXECUTABLE)
