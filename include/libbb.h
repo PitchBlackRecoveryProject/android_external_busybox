@@ -128,7 +128,7 @@
 # include <netinet/in.h>
 #else
 # include <arpa/inet.h>
-# if !defined(__socklen_t_defined) && !defined(_SOCKLEN_T_DECLARED)
+# if !defined(__socklen_t_defined) && !defined(_SOCKLEN_T_DECLARED) && defined(__AARCH64__)
 /* We #define socklen_t *after* includes, otherwise we get
  * typedef redefinition errors from system headers
  * (in case "is it defined already" detection above failed)
