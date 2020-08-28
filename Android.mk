@@ -8,7 +8,7 @@ BIONIC_ICS := false
 BIONIC_L := true
 
 BUSYBOX_WARNING_HIDE := -Wno-error=implicit-function-declaration -Wno-implicit-function-declaration -Wno-implicit-fallthrough \
-			-Wno-sign-compare -Wno-format-overflow -Wno-shift-negative-value -Wno-logical-not-parentheses -Wno-return-type \
+			-Wno-sign-compare -Wno-shift-overflow -Wno-shift-negative-value -Wno-logical-not-parentheses -Wno-return-type \
 			-Wno-unused-function -Wno-string-plus-int -Wno-unused-local-typedef \
 			-Wno-shift-negative-value -Wno-address-of-packed-member -Wno-constant-conversion \
 			-Wno-logical-not-parentheses -Wno-non-literal-null-conversion -Wno-ignored-attributes
@@ -84,7 +84,7 @@ include $(CLEAR_VARS)
 
 KERNEL_MODULES_DIR ?= /system/lib/modules
 
-SUBMAKE := make -s -C $(BB_PATH) CC=$(CC)
+SUBMAKE := $(MAKE_PATH) -s -C $(BB_PATH) CC=$(CC)
 
 BUSYBOX_SRC_FILES = \
 	$(shell cat $(BB_PATH)/busybox-$(BUSYBOX_CONFIG).sources) \
